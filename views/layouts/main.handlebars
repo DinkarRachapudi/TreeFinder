@@ -1,0 +1,66 @@
+<!doctype html>
+<html data-ng-app="treeFinderApp" data-ng-controller="treeFinderController">
+<head>
+<title>Tree Finder for Oracle BPEL</title>
+<link rel="shortcut icon" href="../../img/favicon.ico" />
+<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<base href="/">
+		
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../../css/normalize.css">
+        <link rel="stylesheet" href="../../css/main.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+		
+	
+</head>
+<body>
+	<nav id="banner" class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+	  <a href="/" target="_self">
+                <img class="logo leftMargin" alt="TreeFinder" src="../../img/treelogo.png" />
+            </a>
+	</div>
+  </div>
+  <div class="streak">
+	</div>
+  <div class="subBanner">
+	</div>
+</nav>	
+
+
+ 
+  {{{body}}}
+		
+ <script src="../js/plugins.js"></script>
+        <script src="../js/main.js"></script>
+		
+		<script type="text/ng-template"  id="tree_instance_renderer.html">
+   
+   <div data-ng-class="getInstanceColor(returnInstanceByCIKEY(instance.cikey).STATE,true)" data-ng-init="addChildToTree(instance)" data-ng-mouseover="showParent=true" data-ng-mouseleave="showParent=false">
+   <span class="fieldName label label-primary"><span data-ng-bind="returnInstanceByCIKEY(instance.cikey).COMPONENT_NAME"/></span>
+   <span class="fieldName label label-default">Instance Id:</span><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~returnInstanceByCIKEY(instance.cikey).DOMAIN_NAME~~/~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_NAME~~%20[~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~returnInstanceByCIKEY(instance.cikey).DOMAIN_NAME~~/~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_NAME~~!~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_REVISION~~/~~returnInstanceByCIKEY(instance.cikey).COMPONENT_NAME~~/bpel:~~returnInstanceByCIKEY(instance.cikey).CIKEY~~" target="_self"> <span data-ng-bind="instance.cikey"></a></span>
+   
+   <span class="fieldName label label-default">Title:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).TITLE"/>
+   <span class="fieldName label label-default">Created:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).CREATION_DATE"/>
+   <span class="fieldName label label-default">Modified:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).MODIFY_DATE"/>
+   <span class="fieldName label label-default" data-ng-show="showParent">Parent: 
+   <span data-ng-bind="getParent(returnInstanceByCIKEY(instance.cikey).PARENT_REF_ID).COMPONENT_NAME + ' - ' + getParent(returnInstanceByCIKEY(instance.cikey).PARENT_REF_ID).CIKEY"/></span>
+   </div>
+   
+    <ul>
+        <li class="noListStyle" data-ng-repeat="instance in instance.children" data-ng-include="'tree_instance_renderer.html'" data-ng-init="showParent=false"></li>
+    </ul>
+	 
+</script>
+
+</body>
+</html>

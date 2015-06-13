@@ -1,0 +1,118 @@
+  		<div class="container">
+		<div id="formContainer" data-ng-init="showInstanceIdField=true;searchBy='Instance Id';searchCriteria='bpel'">
+		<form id="searchForm">
+		<div class="row">
+	<div class="radio alert alert-info row">
+	<div class="col-sm-3">
+	<span class="label label-primary em1font">Search By:</span>
+	</div>
+	<div class="col-sm-9">
+      <label>
+	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Instance Id" data-ng-change="showInstanceIdField=true;showInstanceTitleField=false;showProcessNameField=false;showElementNameField=false;showElementValueField=false;searchBy='Instance Id';SearchIdentifierValue='';advancedOff=false">
+	  <span data-ng-class="getCheckedStyle('Instance Id') + ' em1font'">Instance Id</span>
+	  </label>
+	  <label>
+	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Title" data-ng-change="showInstanceIdField=false;showInstanceTitleField=true;showProcessNameField=false;showElementNameField=false;showElementValueField=false;searchBy='Title';SearchIdentifierValue='';advancedOff=false">
+	  <span data-ng-class="getCheckedStyle('Title') + ' em1font'">Title</span>
+	  </label> 
+	  <label>
+	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Prcoess Name" data-ng-change="showInstanceIdField=false;showInstanceTitleField=false;showProcessNameField=true;showElementNameField=false;showElementValueField=false;searchBy='Prcoess Name';SearchIdentifierValue='';advancedOff=false">
+	  <span data-ng-class="getCheckedStyle('Prcoess Name') + ' em1font'">Prcoess Name</span>
+	  </label>
+	  <label>
+	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Advanced" data-ng-change="showInstanceIdField=false;showInstanceTitleField=false;showProcessNameField=false;showElementNameField=true;showElementValueField=true;searchBy='Advanced';SearchIdentifierValue='';advancedOff=true">
+	  <span data-ng-class="getCheckedStyle('Advanced') + ' em1font'">Advanced</span>
+	  </label>
+	</div>	  
+    </div>
+	
+	<div class="radio alert alert-info top-margin row">
+	<div class="col-sm-3">
+	<span class="label label-primary em1font">Search Level:</span>
+	</div>
+	<div class="col-sm-9">
+      <label><input type="radio" data-ng-model="searchCriteria" name="searchLevel" value="bpel"><span data-ng-class="getCheckedStyle('bpel') + ' em1font'">BPEL</span></label>
+	  <label><input type="radio" data-ng-model="searchCriteria" name="searchLevel" value="composite"><span data-ng-class="getCheckedStyle('composite') + ' em1font'">Composite</span></label> 
+	  <a href="#">
+          <span class="glyphicon glyphicon-question-sign blueToolTip" data-toggle="tooltip" data-placement="right" title="Corresponding BPEL instances are returned when searched at composite level"></span>
+        </a>
+		</div>
+    </div>
+	
+	<div class="radio alert alert-info top-margin row">
+	<div class="col-sm-3">
+	<span class="label label-primary em1font">Search Dates:</span>
+	</div>
+	<div class="col-sm-9">
+      <span class="em1font boldFont">Start Date: </span><input type="datetime" data-ng-model="startDate" name="startDate">
+	  <span class="em1font boldFont">End Date: </span><input type="datetime" data-ng-model="endDate" name="endDate">
+		</div>
+    </div>
+	
+	</br>
+	</div>
+	<div class="row top-margin">
+	<input id="identifierField" type="text" name="instanceId" placeholder="Instance Id" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceIdField">
+	<input type="text" name="instanceTitle" placeholder="Instance Title" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceTitleField">
+	<input type="text" name="processName" placeholder="Process Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showProcessNameField">
+	<input type="text" name="elementName" placeholder="Element Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showElementNameField">
+	<input type="text" name="elementValue" placeholder="Element Value" data-ng-model="SearchIdentifierValueTwo" class="form-control top-margin input-lg" data-ng-show="showElementValueField">
+	</div>
+	
+		<div class="row top-margin">
+		<button data-ng-disabled="advancedOff" class="btn-lg btn-primary" data-ng-click="errorMessage='';instances=[];pageStartInstances=[];getInstances(searchBy,SearchIdentifierValue,SearchIdentifierValueTwo,searchCriteria,startDate,endDate);pagesToChop=0">
+      <span class="glyphicon glyphicon-search"></span> Search </button>
+	  </div>
+	</form>
+	</div>
+	
+	
+	<div id="resultsContainer">
+	
+  
+	<div data-ng-show="instances.length>0">
+	
+	
+	<div class="row">
+	<ul class="pagination pagination-sm">
+	<li><span class="label label-primary">Page</span></li>
+    <li data-ng-repeat="x in pageStartInstances" data-ng-class="getActivePageStyle($index + 1)">
+	<a href="#" data-ng-click="$parent.pagesToChop=$index">
+	<span data-ng-bind="$index + 1"></span>
+	</a>
+	</li>
+  </ul>
+ </div>
+	
+	<table class="table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>InstanceId</th>
+        <th>Process</th>
+		<th>Title</th>
+		<th>Received Date</th>
+		<th>Modified Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-ng-repeat="x in instances| spliceFilter:pagesToChop*resultsPerPage | limitTo:resultsPerPage" data-ng-class="getInstanceColor(x.STATE)">
+        <td><span data-ng-bind="(pagesToChop*resultsPerPage) + $index + 1"></span></td>
+		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
+        <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
+        <td><span data-ng-bind="x.TITLE"></span></td>
+		<td><span data-ng-bind="x.CREATION_DATE"></span></td>
+		<td><span data-ng-bind="x.MODIFY_DATE"></span></td>
+		<td><a data-ng-href="/treefinder?instanceid=~~x.CIKEY~~" target="_blank"><button type="button" class="btn btn-primary">TreeFinder</button></a></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  
+  <div data-ng-show="errorMessage.length>0">
+  <span id="displayMessage" data-ng-bind="errorMessage"></span>
+  </div>
+	</div>
+  
+  
+  </div>
