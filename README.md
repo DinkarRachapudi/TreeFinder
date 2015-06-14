@@ -19,10 +19,16 @@ See https://drive.google.com/file/d/0B07MCddG9ynCZkZYOVNXT01JZHc/view?usp=sharin
 ##Setting up the Project
 
 1.	Checkout the project from GitHub.
-2.	Download and install Mongo DB. Create a user from mongo shell. These credentials will go in credentails.js in step # 5
-3.	Download and install Node.js
-4.	Edit context.properties - Enter Oracle BPEL Engine Database parameters and MongoDB parameters in the angle bracket place holders.
-5.	Edit credentials.js - Enter MongoDB connection parameters in the angle bracket place holders.
-6.	Edit main.handlebars and home.handlebars - Enter SOA server host/port, weblogic domain name and SOA server name in the angle bracket place holders.
-7.	CD to the project directory and run 'node server.js'
+2.	Set up Mongo DB. 
+  1. Download and install MongoDB.
+  2. Add mongodb bin directory (folder containing mongo.exe) to the path variable if not present.
+  3. Create directory 'data/db' under C drive.
+  4. Run mongod.exe from installation directory. MongoDB starts up.
+  5. In a terminal window, enter 'mongo' to start the mongo shell. Type 'use soainfra' to switch to soainfra database. soainfra is the database that will be used by the application.
+  6. At the screen which shows 'switched to db soainfra', create a user by running the following command - db.createUser({user:YourUserName,pwd:YourPassword,roles:[]}). Successfully added user message is displayed.
+  7. Enter the above user name and password into the placeholders in credentails.js file.
+3.	Download and install Node.js. Make sure nodejs installation directory is included in the path variable.
+4.	Edit context.properties - Enter Oracle BPEL Engine Database parameters in the angle bracket place holders.
+5.	Edit main.handlebars and home.handlebars - Enter SOA server host/port, weblogic domain name and SOA server name in the angle bracket place holders. Don't forget to remove the angle brackets.
+6.	CD to the project directory and run 'node server.js'
 
