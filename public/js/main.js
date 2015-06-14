@@ -10,7 +10,6 @@ treeFinderApp.config(function($interpolateProvider,$locationProvider) {
 // Custom filter for pagination  
 treeFinderApp.filter('spliceFilter',function(){
 return function(inputArray,noOfElemsToRemove){
-console.log("called filter to remove " + noOfElemsToRemove + " elements");
 return inputArray.slice(noOfElemsToRemove);
 }
 });
@@ -83,7 +82,7 @@ $scope.searchTypes=['Instance Id','Title','Process Name','Advanced'];
 $scope.SearchIdentifierValue="";
 $scope.instances=[];
 $scope.pagesToChop = 0;
-$scope.resultsPerPage = 20;
+$scope.resultsPerPage = 10;
 
 
 // Function called from Search/TreeFinder buttons
@@ -105,7 +104,11 @@ return $scope.instances;
 	
 // Determine no of pages needed
 $scope.getNoOfPages = function(){
+$scope.pageStartInstances=[];
+$scope.pagesToChop=0;
+$scope.resultsPerPage = Number($scope.resultsPerPage);
 for(i=0;i<$scope.instances.length;i+=$scope.resultsPerPage){
+i = Number(i);
 $scope.pageStartInstances.push(i+1);
 }
 }
@@ -115,6 +118,37 @@ $scope.getCtrlScope = function(){
 return $scope;
 }
 
+
+// Function returning instance state as string based on integer value
+$scope.getState = function(stateNum){
+var state;
+switch (stateNum) {
+    case '1':
+        state="Running";
+        break;
+    case '3':
+        state="Faulted";
+        break;
+	case "5":
+        state="Completed";
+        break;
+	case '6':
+        state="Faulted";
+        break;
+	case '8':
+        state="Aborted";
+        break;
+	case '9':
+        state="Stale";
+        break;
+	case '32':
+        state="Completed";
+        break;
+	default:
+		state="Running";
+}
+return state;
+}
 
 // Utility function for retrieving instance by cikey
 $scope.returnInstanceByCIKEY = function(cikey){
@@ -126,6 +160,31 @@ instanceDetails=$scope.instances[i];
 }
 return instanceDetails;
 }
+
+
+// Function supporting sorting feature
+$scope.sortInstancesByRecDate = function(ascending){
+if(ascending){
+$scope.instances.sort(function(a,b){
+		return new Date(a.CREATION_DATE)-new Date(b.CREATION_DATE)});
+}
+else {
+$scope.instances.sort(function(a,b){
+		return new Date(b.CREATION_DATE)-new Date(a.CREATION_DATE)});
+}
+}
+
+$scope.sortInstancesByModDate = function(ascending){
+if(ascending){
+$scope.instances.sort(function(a,b){
+		return new Date(a.MODIFY_DATE)-new Date(b.MODIFY_DATE)});
+}
+else {
+$scope.instances.sort(function(a,b){
+		return new Date(b.MODIFY_DATE)-new Date(a.MODIFY_DATE)});
+}
+}
+
 
 // Functions for CSS styling
 $scope.getInstanceColor = function(state,alert){
@@ -224,8 +283,7 @@ return parentInstance;
 
 // JQuery Tootltip
 $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-console.log("tooltip fired");	
+    $('[data-toggle="tooltip"]').tooltip();	
 });
 
 $(document).ready(function() {

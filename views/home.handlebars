@@ -83,6 +83,18 @@
 	</li>
   </ul>
  </div>
+ 
+ <div calss="row">
+ <div class="float-right">
+ <span class="label label-primary">Results Per Page</span>
+ <select data-ng-model="resultsPerPage" data-ng-change="getNoOfPages()">
+ <option value=10>10</option>
+ <option value=20>20</option>
+ <option value=50>50</option>
+ </select>
+ </div>
+ </div>
+ 
 	
 	<table class="table">
     <thead>
@@ -91,8 +103,15 @@
         <th>InstanceId</th>
         <th>Process</th>
 		<th>Title</th>
-		<th>Received Date</th>
-		<th>Modified Date</th>
+		<th>State</th>
+		<th>Received Date <a href="#" data-ng-click="sortInstancesByRecDate(true)"><span class="glyphicon glyphicon-arrow-up"/>
+		</a>
+		<a href="#" data-ng-click="sortInstancesByRecDate(false)"><span class="glyphicon glyphicon-arrow-down"/></a>
+		</th>
+		<th>Modified Date<a href="#" data-ng-click="sortInstancesByModDate(true)"><span class="glyphicon glyphicon-arrow-up"/>
+		</a>
+		<a href="#" data-ng-click="sortInstancesByModDate(false)"><span class="glyphicon glyphicon-arrow-down"/></a>
+		</th>
       </tr>
     </thead>
     <tbody>
@@ -101,6 +120,7 @@
 		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
         <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
         <td><span data-ng-bind="x.TITLE"></span></td>
+		<td><span data-ng-bind="getState(x.STATE)"></span></td>
 		<td><span data-ng-bind="x.CREATION_DATE"></span></td>
 		<td><span data-ng-bind="x.MODIFY_DATE"></span></td>
 		<td><a data-ng-href="/treefinder?instanceid=~~x.CIKEY~~" target="_blank"><button type="button" class="btn btn-primary">TreeFinder</button></a></td>
