@@ -55,28 +55,31 @@ public class SOATreeFinder {
         cal.add(Calendar.DATE, -1); 
 	String yesterdaysDate = sdf.format(cal.getTime()); 
         //Setting up sql queries to fetch results from yesterday if no start and end dates are supplied in the input arguments
-        String cubeInstanceQuery = "select * from cube_instance WHERE TO_CHAR(MODIFY_DATE,'YYYY/MM/DD') ='" + yesterdaysDate +"'";
-        String cubeCompositeInstanceQuery = "select cui.*,coi.TITLE as COMPTITLE, coi.* from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and TO_CHAR(cui.MODIFY_DATE,'YYYY/MM/DD') ='" + yesterdaysDate +"'";
+        String cubeCompositeInstanceQuery = "select cui.CIKEY,cui.CREATION_DATE,cui.MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,"
+                + "cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,"
+                + "cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,cui.CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE"
+                + " from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and "
+                + "TO_CHAR(cui.MODIFY_DATE,'YYYY/MM/DD') ='" + yesterdaysDate +"'";
         String payloadQuery = "select xd.DOCUMENT_ID, xd.DOCUMENT, cui.* from xml_document xd, DOCUMENT_DLV_MSG_REF dr, dlv_message dm, cube_instance cui where xd.DOCUMENT_ID=dr.DOCUMENT_ID and dr.MESSAGE_GUID=dm.MESSAGE_GUID and dm.CONV_ID=cui.CONVERSATION_ID and TO_CHAR(cui.MODIFY_DATE,'YYYY/MM/DD') ='" + yesterdaysDate +"'";
         
        
         // update sql queries if arguments are supplied
         if(args.length==2 && args[0]!=null && args[1]!=null){
-               cubeInstanceQuery="select * from cube_instance where modify_date > TO_DATE('" + args[0] + "', 'YYYY/MM/DD') and modify_date < TO_DATE('" + args[1] + "', 'YYYY/MM/DD')"; 
-               cubeCompositeInstanceQuery="select cui.*,coi.TITLE as COMPTITLE, coi.* from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and  cui.modify_date > TO_DATE('" + args[0] + "', 'YYYY/MM/DD') and cui.modify_date < TO_DATE('" + args[1] + "', 'YYYY/MM/DD')";
+               cubeCompositeInstanceQuery="select cui.CIKEY,cui.CREATION_DATE,cui.MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,"
+                + "cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,"
+                + "cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,cui.CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE"
+                + " from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and  "
+                       + "cui.modify_date > TO_DATE('" + args[0] + "', 'YYYY/MM/DD') and cui.modify_date < TO_DATE('" + args[1] + "', 'YYYY/MM/DD')";
                payloadQuery="select xd.DOCUMENT_ID, xd.DOCUMENT, cui.* from xml_document xd, DOCUMENT_DLV_MSG_REF dr, dlv_message dm, cube_instance cui where xd.DOCUMENT_ID=dr.DOCUMENT_ID and dr.MESSAGE_GUID=dm.MESSAGE_GUID and dm.CONV_ID=cui.CONVERSATION_ID and cui.modify_date > TO_DATE('" + args[0] + "', 'YYYY/MM/DD') and cui.modify_date < TO_DATE('" + args[1] + "', 'YYYY/MM/DD')";     
             }
         try{
             
-    loadMongoFromSQL(cubeInstanceQuery,"soainfra","cube_instance","CIKEY");
-    System.out.println("cube instance query:" + cubeInstanceQuery);
-    logger.info("Completed " + cubeInstanceQuery);
     loadMongoFromSQL(cubeCompositeInstanceQuery,"soainfra","cubeComposite_instance","CIKEY");
     System.out.println("composite  query:" + cubeCompositeInstanceQuery);
     logger.info("Completed " + cubeCompositeInstanceQuery);
-    loadMongoFromSQL(payloadQuery,"soainfra","xml_document","DOCUMENT_ID");
-    System.out.println("payload query:" + payloadQuery);
-    logger.info("Completed " + payloadQuery);
+    //loadMongoFromSQL(payloadQuery,"soainfra","xml_document","DOCUMENT_ID");
+    //System.out.println("payload query:" + payloadQuery);
+    //logger.info("Completed " + payloadQuery);
             
         }
         catch(FileNotFoundException e){
@@ -113,7 +116,7 @@ public class SOATreeFinder {
         ResultSet rs = stmt.executeQuery(sqlQuery);
         ResultSetMetaData rsmd = rs.getMetaData();
         while (rs.next()) {
-            for(int i=1;i<rsmd.getColumnCount();i++){
+            for(int i=1;i<=rsmd.getColumnCount();i++){
                 /* The following block of switch statement checks for the sql data type of
                 a given column and puts the appropriate object into the hash map*/
                 switch (rsmd.getColumnType(i)) {
