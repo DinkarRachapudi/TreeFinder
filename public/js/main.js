@@ -253,7 +253,7 @@ dataService.getInstancesData('ecid',ecid,'','bpel','','',function(dataResponse) 
 		return a.CIKEY-b.CIKEY});
 		for(i=0;i<$scope.instances.length;i++){
 		console.log($scope.instances[i].CIKEY + ":" + $scope.instances[i].PARENT_REF_ID);
-		if($scope.instances[i].PARENT_REF_ID==null){
+		if($scope.instances[i].PARENT_REF_ID==null || $scope.instances[i].PARENT_REF_ID.substring(0,8)=="mediator"){
 		$scope.treeInstances.push({cikey:$scope.instances[i].CIKEY,children:[]});
 }
 }		
