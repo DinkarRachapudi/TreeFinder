@@ -353,6 +353,10 @@ font-weight:bold;
 margin-left:3em;
 }
 
+.float-right{
+float:right;
+}
+
 span#displayMessage{
 font-weight:bold;
 font-size:2em;
