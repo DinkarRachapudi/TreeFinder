@@ -17,7 +17,7 @@
 	  </label> 
 	  <label>
 	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Prcoess Name" data-ng-change="showInstanceIdField=false;showInstanceTitleField=false;showProcessNameField=true;showElementNameField=false;showElementValueField=false;searchBy='Prcoess Name';SearchIdentifierValue='';advancedOff=false">
-	  <span data-ng-class="getCheckedStyle('Prcoess Name') + ' em1font'">Prcoess Name</span>
+	  <span data-ng-class="getCheckedStyle('Prcoess Name') + ' em1font'">Process Name</span>
 	  </label>
 	  <label>
 	  <input type="radio" data-ng-model="searchBy" name="searchBy" value="Advanced" data-ng-change="showInstanceIdField=false;showInstanceTitleField=false;showProcessNameField=false;showElementNameField=true;showElementValueField=true;searchBy='Advanced';SearchIdentifierValue='';advancedOff=true">
@@ -60,7 +60,7 @@
 	</div>
 	
 		<div class="row top-margin">
-		<button data-ng-disabled="advancedOff" class="btn-lg btn-primary" data-ng-click="errorMessage='';instances=[];pageStartInstances=[];getInstances(searchBy,SearchIdentifierValue,SearchIdentifierValueTwo,searchCriteria,startDate,endDate);pagesToChop=0">
+		<button data-ng-disabled="advancedOff" class="btn-lg btn-primary" data-ng-click="errorMessage='';instances=[];pageStartInstances=[];getInstances(searchBy,SearchIdentifierValue,SearchIdentifierValueTwo,searchCriteria,startDate,endDate);pagesToChop=0;onInstanceSearch()">
       <span class="glyphicon glyphicon-search"></span> Search </button>
 	  </div>
 	</form>
@@ -132,6 +132,11 @@
   <div data-ng-show="errorMessage.length>0">
   <span id="displayMessage" data-ng-bind="errorMessage"></span>
   </div>
+  
+  <div data-ng-show="showLoadingImg && errorMessage.length==0 && instances.length==0">
+  <img src="../img/ajax-loader.gif"/>
+  </div>
+  
 	</div>
   
   

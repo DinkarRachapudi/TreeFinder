@@ -83,6 +83,7 @@ $scope.SearchIdentifierValue="";
 $scope.instances=[];
 $scope.pagesToChop = 0;
 $scope.resultsPerPage = 10;
+$scope.showLoadingImg = false;
 
 
 // Function called from Search/TreeFinder buttons
@@ -101,6 +102,10 @@ dataService.getInstancesData(searchById,searchByValue,searchByValueTwo,searchCri
     });
 return $scope.instances;
 	}
+
+$scope.onInstanceSearch = function(){
+$scope.showLoadingImg=true;
+}
 	
 // Determine no of pages needed
 $scope.getNoOfPages = function(){
