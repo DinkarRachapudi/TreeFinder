@@ -380,6 +380,12 @@ font-weight:bold;
 font-size:1em;
 }
 
+.center-align{
+width:20%;
+margin-right:auto;
+margin-left:auto;
+}
+
 .blueToolTip + .tooltip.right > .tooltip-arrow, .blueToolTip + .tooltip > .tooltip-inner {
       background-color: rgb(0,109,204); 
   }
