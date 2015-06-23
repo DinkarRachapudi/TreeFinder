@@ -8,7 +8,7 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
 
 ##System Architecture
 
-See https://drive.google.com/file/d/0B07MCddG9ynCZkZYOVNXT01JZHc/view?usp=sharing
+![alt tag](https://github.com/DinkarRachapudi/DinkarRachapudi.github.io/blob/master/img/System%20Architecture.jpg?raw=true)
 
 
 ##Prerequisites
@@ -30,5 +30,7 @@ See https://drive.google.com/file/d/0B07MCddG9ynCZkZYOVNXT01JZHc/view?usp=sharin
 3.	Download and install Node.js. Make sure nodejs installation directory is included in the path variable.
 4.	Edit context.properties - Enter Oracle BPEL Engine Database parameters in the angle bracket place holders.
 5.	Edit main.handlebars and home.handlebars - Enter SOA server host/port, weblogic domain name and SOA server name in the angle bracket place holders. Don't forget to remove the angle brackets.
-6.	CD to the project directory and run 'node server.js'
+6.	Run daily.bat (to load yesterday's data) or batch.bat (to load data within a specific date range). This will load data into the MongoDB from the BPEL engine tables.
+7.	CD to the project directory from a terminal and run 'node server.js'. Make sure 'MongoDB connection established' message is displayed. 
+8.	Fire up a browser and navigate to http://localhost:3000 to start searching.
 
