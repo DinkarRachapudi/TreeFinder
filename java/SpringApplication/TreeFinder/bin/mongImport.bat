@@ -1,0 +1,1 @@
+mongoimport --db soainfra --collection cubeComposite_instance --type csv --headerline --file %~dp0\cubeComposite_Instance.csv

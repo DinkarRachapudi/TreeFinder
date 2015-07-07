@@ -1,0 +1,3 @@
+set CLASSPATH=.;%~dp0\..\..\..\lib\mongo-java-driver-3.0.1.jar;%~dp0\..\..\..\lib\spring-expression-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\spring-beans-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\spring-context-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\spring-core-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\spring-jdbc-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\spring-tx-4.1.5.RELEASE.jar;%~dp0\..\..\..\lib\ojdbc6.jar;%~dp0\..\..\..\lib\commons-logging-1.2.jar;%~dp0\..\config;
+
+java com.dinkarrachapudi.soatreefinder.TreeFinder

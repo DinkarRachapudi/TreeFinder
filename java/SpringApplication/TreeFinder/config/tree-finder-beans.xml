@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Scans within the base package of the application for @Component classes to configure as beans -->
+    <!--<context:component-scan base-package="org.springframework.docs.test" />-->
+	
+	<!--<context:property-placeholder location="context.properties"/>-->
+
+    <!--<bean id="place" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="${jdbc.driverClassName}"/>
+    </bean>-->
+	
+	<bean id="BPELDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:DEV_SOAINFRA/welcome1@//Siree:1521/XE"/>
+        <property name="username" value="DEV_SOAINFRA"/>
+        <property name="password" value="welcome1"/>
+    </bean>
+	
+	<bean id="bpelJDBCTemplate" class="com.dinkarrachapudi.soatreefinder.BPELJdbcTemplate">
+      <property name="dataSource"  ref="BPELDataSource" />    
+   </bean>
+   
+   <bean id="reader" class="com.dinkarrachapudi.soatreefinder.OracleDBReader" destroy-method="closeReader">
+      <property name="dataSource"  ref="BPELDataSource"/>  
+	  <property name="filePath"  value="#{ systemProperties['user.dir'] }\cubeComposite_Instance.csv"/> 
+   </bean>
+   
+   <bean id="readerFacade" class="com.dinkarrachapudi.soatreefinder.ReaderFacade">
+      <property name="reader"  ref="reader" /> 
+		<property name="SQL"  value="select cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
+TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
+cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
+cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,
+TO_CHAR(cui.CPST_INST_CREATED_TIME,'YYYY-MM-DD HH24:MI:SSxFF') as CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE
+from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id" /> 	  
+   </bean>
+
+</beans>
