@@ -8,7 +8,7 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
 
 ##System Architecture
 
-![alt tag](https://github.com/DinkarRachapudi/DinkarRachapudi.github.io/blob/master/img/System%20Architecture.jpg?raw=true)
+![alt tag](https://github.com/DinkarRachapudi/DinkarRachapudi.github.io/blob/master/img/System%20Architecture%20-Spring%20Integration.jpg?raw=true)
 
 
 ##Prerequisites
