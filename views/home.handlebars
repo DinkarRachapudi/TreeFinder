@@ -119,7 +119,7 @@
         <td><span data-ng-bind="(pagesToChop*resultsPerPage) + $index + 1"></span></td>
 		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
         <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
-        <td><span data-ng-bind="x.TITLE"></span></td>
+        <td><span data-ng-bind="getTitle(x)"></span></td>
 		<td><span data-ng-bind="getState(x.STATE)"></span></td>
 		<td><span data-ng-bind="x.CREATION_DATE"></span></td>
 		<td><span data-ng-bind="x.MODIFY_DATE"></span></td>

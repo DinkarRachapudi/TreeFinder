@@ -155,6 +155,16 @@ switch (stateNum) {
 return state;
 }
 
+//Function returning BPEL or Composite level Title
+$scope.getTitle = function(instanceDetails){
+if(instanceDetails.TITLE.length!=0 && instanceDetails.TITLE!="null")
+return instanceDetails.TITLE;
+else if(instanceDetails.COMPTITLE.length!=0 && instanceDetails.COMPTITLE!="null");
+return instanceDetails.COMPTITLE;
+else
+return "Instance " + instanceDetails.CIKEY + " of " + instanceDetails.COMPONENT_NAME;
+}
+
 // Utility function for retrieving instance by cikey
 $scope.returnInstanceByCIKEY = function(cikey){
 var instanceDetails;
@@ -258,7 +268,7 @@ dataService.getInstancesData('ecid',ecid,'','bpel','','',function(dataResponse) 
 		return a.CIKEY-b.CIKEY});
 		for(i=0;i<$scope.instances.length;i++){
 		console.log($scope.instances[i].CIKEY + ":" + $scope.instances[i].PARENT_REF_ID);
-		if($scope.instances[i].PARENT_REF_ID==null || $scope.instances[i].PARENT_REF_ID.substring(0,8)=="mediator"){
+		if($scope.instances[i].PARENT_REF_ID==null || $scope.instances[i].PARENT_REF_ID.substring(0,8)=="mediator" || $scope.instances[i].PARENT_REF_ID.length==0 || $scope.instances[i].PARENT_REF_ID=="null"){
 		$scope.treeInstances.push({cikey:$scope.instances[i].CIKEY,children:[]});
 }
 }		
