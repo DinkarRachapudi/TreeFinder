@@ -7,15 +7,6 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
-
-    <!-- Scans within the base package of the application for @Component classes to configure as beans -->
-    <!--<context:component-scan base-package="org.springframework.docs.test" />-->
-	
-	<!--<context:property-placeholder location="context.properties"/>-->
-
-    <!--<bean id="place" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="${jdbc.driverClassName}"/>
-    </bean>-->
 	
 	<bean id="BPELDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
@@ -28,27 +19,34 @@
       <property name="dataSource"  ref="BPELDataSource" />    
    </bean>
    
-   <bean id="reader" class="com.dinkarrachapudi.soatreefinder.OracleDBReader" destroy-method="closeReader">
-      <property name="dataSource"  ref="BPELDataSource"/>  
-	  <property name="filePath"  value="#{ systemProperties['user.dir'] }\cubeComposite_Instance.csv"/>
-	  <property name="recordsPerBatch"  value="100"/>
+   <bean id="reader" class="com.dinkarrachapudi.soatreefinder.OracleDBReader">
+      <property name="dataSource"  ref="BPELDataSource"/>
+	  <property name="numberOfthreads"  value="10"/>
 	  <property name="countSQL"  value="select count(*) from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id"/>
+   </bean>
+   
+   <bean id="readerFacade" class="com.dinkarrachapudi.soatreefinder.ReaderFacade" init-method="init">
+      <property name="reader"  ref="reader" /> 
+	  <property name="mongoHost"  value="127.0.0.1"/> 
+	  <property name="mongoPort"  value="27017"/>  	  
+   </bean>
+   
+   <bean id="readerThread" class="com.dinkarrachapudi.soatreefinder.ReaderThread" scope="prototype"> 
+	  <property name="dataSource"  ref="BPELDataSource"/>  
+	  <property name="folderPath"  value="#{ systemProperties['user.dir'] }"/>
+	  <property name="recordsPerBatch"  value="100"/>
+	  <property name="SQL"  value="select * from (select rownum rn,cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
+TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
+cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
+cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,
+TO_CHAR(cui.CPST_INST_CREATED_TIME,'YYYY-MM-DD HH24:MI:SSxFF') as CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE
+from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id order by CREATION_DATE asc)"/>
 	  <property name="columnsSQL"  value="select rownum rn,cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
 TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
 cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
 cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,
 TO_CHAR(cui.CPST_INST_CREATED_TIME,'YYYY-MM-DD HH24:MI:SSxFF') as CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE
-from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and rownum=1" />
-   </bean>
-   
-   <bean id="readerFacade" class="com.dinkarrachapudi.soatreefinder.ReaderFacade">
-      <property name="reader"  ref="reader" /> 
-		<property name="SQL"  value="select * from (select rownum rn,cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
-TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
-cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
-cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,
-TO_CHAR(cui.CPST_INST_CREATED_TIME,'YYYY-MM-DD HH24:MI:SSxFF') as CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE
-from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id order by CREATION_DATE asc)" /> 	  
+from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id and rownum=1" />	
    </bean>
 
 </beans>
