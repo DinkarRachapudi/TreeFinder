@@ -28,9 +28,9 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
   6. At the screen which shows 'switched to db soainfra', create a user by running the following command - db.createUser({user:YourUserName,pwd:YourPassword,roles:[]}). Successfully added user message is displayed.
   7. Enter the above user name and password into the placeholders in credentails.js file.
 3.	Download and install Node.js. Make sure nodejs installation directory is included in the path variable.
-4.	Edit context.properties - Enter Oracle BPEL Engine Database parameters in the angle bracket place holders.
+4.	Edit tree-finder-beans.xml - Enter Oracle BPEL Engine Database parameters for bean 'BPELDataSource'. Optionally, configure the number of parallel threads in the 'reader' bean and the number of records per batch in the 'readerThread' bean.
 5.	Edit main.handlebars and home.handlebars - Enter SOA server host/port, weblogic domain name and SOA server name in the angle bracket place holders. Don't forget to remove the angle brackets.
-6.	Run daily.bat (to load yesterday's data) or batch.bat (to load data within a specific date range). This will load data into the MongoDB from the BPEL engine tables.
+6.	Run loadMongo.bat file to load the data from Oracle BPEL Engine tables into MongoDB.
 7.	CD to the project directory from a terminal and run 'node server.js'. Make sure 'MongoDB connection established' message is displayed. 
 8.	Fire up a browser and navigate to http://localhost:3000 to start searching.
 
