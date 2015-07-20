@@ -76,15 +76,20 @@ public class ReaderThread implements Runnable{
 			   fileWriter.close();
 			   
 			   int batchStartRow = startRow;
-			   int batchEndRow = startRow + recordsPerBatch;
-			   while(endRow>=batchEndRow){
+			   int batchEndRow;
+			   batchEndRow = startRow + recordsPerBatch;
+			   if(recordsPerBatch>endRow)
+				   batchEndRow=endRow; 
+			   while(batchStartRow<endRow){
 				   System.out.println(threadName + " Executing SQL " + SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow);
 				   fileWriter = new FileWriter(filePath,true);
 				   rcbHandler = new CSVWriter(fileWriter);
-				   jdbcTemplateObject.query(SQL + " where rn>" + startRow + " and rn<=" + endRow, rcbHandler);
-				   System.out.println("Completed CSVWrite for SQL " + SQL + " where rn>" + startRow + " and rn<=" + endRow);
+				   jdbcTemplateObject.query(SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow, rcbHandler);
+				   System.out.println("Completed CSVWrite for SQL " + SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow);
 				   batchStartRow = batchStartRow + recordsPerBatch;
 				   batchEndRow = batchStartRow + recordsPerBatch;
+				   if(endRow<batchEndRow)
+					   batchEndRow = endRow;
 			   }
 			   fileWriter.close();
 			   String mongoImportCommand = "mongoimport --db soainfra --collection cubeComposite_instance --type csv --headerline --file " + System.getProperty("user.dir") + "\\cubeComposite_instance-" + threadName + ".csv";
