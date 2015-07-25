@@ -1,5 +1,5 @@
   		<div class="container">
-		<div id="formContainer" data-ng-init="showInstanceIdField=true;searchBy='Instance Id';searchCriteria='bpel'">
+		<div id="formContainer" data-ng-init="showInstanceIdField=true;searchBy='Instance Id';searchCriteria='bpel';getProcesses()">
 		<form id="searchForm">
 		<div class="row">
 	<div class="radio alert alert-info row">
@@ -54,9 +54,12 @@
 	<div class="row top-margin">
 	<input id="identifierField" type="text" name="instanceId" placeholder="Instance Id" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceIdField">
 	<input type="text" name="instanceTitle" placeholder="Instance Title" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceTitleField">
-	<input type="text" name="processName" placeholder="Process Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showProcessNameField">
+	<input type="text" name="processName" placeholder="Process Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showProcessNameField" data-ng-change="showSuggestedProcesses=true">
 	<input type="text" name="elementName" placeholder="Element Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showElementNameField">
 	<input type="text" name="elementValue" placeholder="Element Value" data-ng-model="SearchIdentifierValueTwo" class="form-control top-margin input-lg" data-ng-show="showElementValueField">
+	<ul class="list-group" data-ng-show="showSuggestedProcesses && showProcessNameField && SearchIdentifierValue.length>0">
+    <li class="noListStyle list-group-item" data-ng-repeat="x in processes | limitTo:60 | filter:SearchIdentifierValue" data-ng-click="getCtrlScope().SearchIdentifierValue=x;getCtrlScope().showSuggestedProcesses=false"><span data-ng-bind="x"></span></li><
+  </ul>
 	</div>
 	
 		<div class="row top-margin">
@@ -117,9 +120,9 @@
     <tbody>
       <tr data-ng-repeat="x in instances| spliceFilter:pagesToChop*resultsPerPage | limitTo:resultsPerPage" data-ng-class="getInstanceColor(x.STATE)">
         <td><span data-ng-bind="(pagesToChop*resultsPerPage) + $index + 1"></span></td>
-		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
+		<td><a data-ng-href="http://localhost:7001/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_base_domain/base_domain/soa_server1/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
         <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
-        <td><span data-ng-bind="getTitle(x)"></span></td>
+        <td><span data-ng-bind="x.TITLE"></span></td>
 		<td><span data-ng-bind="getState(x.STATE)"></span></td>
 		<td><span data-ng-bind="x.CREATION_DATE"></span></td>
 		<td><span data-ng-bind="x.MODIFY_DATE"></span></td>

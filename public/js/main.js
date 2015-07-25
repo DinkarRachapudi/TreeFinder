@@ -65,6 +65,20 @@ switch (paramName) {
 		$scope.errorMessage="Error fetching instances";
     });
  }
+ 
+ this.getProcessesData = function(callbackFunc){
+ var httpcall = $http({
+        method: 'GET',
+        url: '/getProcesses',
+        params: {}
+        });
+		httpcall.success(function(data){
+         callbackFunc(data);
+    }).error(function(){
+		$scope.processes=[];
+    });
+ }
+ 
 });
 
 // App's controller
@@ -84,6 +98,8 @@ $scope.instances=[];
 $scope.pagesToChop = 0;
 $scope.resultsPerPage = 10;
 $scope.showLoadingImg = false;
+$scope.processes = [];
+$scope.showSuggestedProcesses = false;
 
 
 // Function called from Search/TreeFinder buttons
@@ -106,6 +122,18 @@ return $scope.instances;
 $scope.onInstanceSearch = function(){
 $scope.showLoadingImg=true;
 }
+
+$scope.getProcesses = function(){
+dataService.getProcessesData(function(dataResponse){
+if(dataResponse.processes!=undefined){
+$scope.processes = dataResponse.processes;
+}
+else {
+$scope.processes = [];
+}
+});
+}
+
 	
 // Determine no of pages needed
 $scope.getNoOfPages = function(){
@@ -153,16 +181,6 @@ switch (stateNum) {
 		state="Running";
 }
 return state;
-}
-
-//Function returning BPEL or Composite level Title
-$scope.getTitle = function(instanceDetails){
-if(instanceDetails.TITLE.length!=0 && instanceDetails.TITLE!="null")
-return instanceDetails.TITLE;
-else if(instanceDetails.COMPTITLE.length!=0 && instanceDetails.COMPTITLE!="null");
-return instanceDetails.COMPTITLE;
-else
-return "Instance " + instanceDetails.CIKEY + " of " + instanceDetails.COMPONENT_NAME;
 }
 
 // Utility function for retrieving instance by cikey
@@ -268,7 +286,7 @@ dataService.getInstancesData('ecid',ecid,'','bpel','','',function(dataResponse) 
 		return a.CIKEY-b.CIKEY});
 		for(i=0;i<$scope.instances.length;i++){
 		console.log($scope.instances[i].CIKEY + ":" + $scope.instances[i].PARENT_REF_ID);
-		if($scope.instances[i].PARENT_REF_ID==null || $scope.instances[i].PARENT_REF_ID.substring(0,8)=="mediator" || $scope.instances[i].PARENT_REF_ID.length==0 || $scope.instances[i].PARENT_REF_ID=="null"){
+		if($scope.instances[i].PARENT_REF_ID==null || $scope.instances[i].PARENT_REF_ID.substring(0,8)=="mediator" || $scope.instances[i].PARENT_REF_ID=="null"){
 		$scope.treeInstances.push({cikey:$scope.instances[i].CIKEY,children:[]});
 }
 }		
