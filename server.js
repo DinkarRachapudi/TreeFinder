@@ -57,6 +57,14 @@ app.get('/',function(req, res){
 res.render('home');
 });
 
+app.get('/getProcesses',function(req, res){
+cubeCompositeInstance.distinct('COMPONENT_NAME',function(err, docs){
+console.log("Processes: " + JSON.stringify(docs));
+res.type('json');
+res.send({"processes":docs});
+})
+});
+
 app.get('/getInstances',function(req, res){
 
 // Update beginDate and endDate if provided in params
@@ -70,171 +78,41 @@ endDate=req.query.endDate;
 
 endDate = endDate.replace("T", " ").replace("Z","");
 
-
-
-// Query by Instance Id
-if(req.query.instanceId!=undefined){
-console.log("received query by " + req.query.searchLevel);
-if(req.query.searchLevel=="bpel"){
-cubeCompositeInstance.find({CIKEY:Number(req.query.instanceId),"MODIFY_DATE": {$gte: beginDate,$lt: endDate}},function(err, cubeinstances){
+// Generic function included in model.find callback
+function sendBackData(err, docs){
 if (err){
-console.log("Error finding instance " + req.query.instanceId + ' error is ' + err);
-res.send("Error retreiving instance for: " + req.query.instanceId + " Error is " + err);
+console.log("Error finding instances: " + err);
+res.send("Error finding instances: " + err);
 }
-else if (cubeinstances.length==0){
-console.log("No Instances found for Instance Id " + req.query.instanceId);
-res.send("No Instances found for Instance Id " + req.query.instanceId);
+else if (docs.length==0){
+console.log("No Instances found with search parameters");
+res.send("No Instances found with search parameters");
 }
 else{
-console.log('Found Instances for ' + req.query.instanceId + ' length is ' + cubeinstances.length);
+console.log('Found Instances.' + ' Length is ' + docs.length);
 res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-else if(req.query.searchLevel=="composite"){
-cubeCompositeInstance.find({CMPST_ID:Number(req.query.instanceId),"MODIFY_DATE": {$gte: beginDate,$lt: endDate}},function(err, cubeinstances){
-if (err){
-console.log("Error finding instance " + req.query.instanceId + ' error is ' + err);
-res.send("Error retreiving instance for: " + req.query.instanceId + " Error is " + err);
-}
-else if (cubeinstances.length==0){
-console.log("No Instances found for Instance Id " + req.query.instanceId);
-res.send("No Instances found for Instance Id " + req.query.instanceId);
-}
-else{
-console.log('Found Instances for ' + req.query.instanceId + ' length is ' + cubeinstances.length);
-res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-else {
-res.send("Invalid Search Level");
+res.send({"instances":docs});
 }
 }
 
-// Query by Instance Title
-else if(req.query.instanceTitle!=undefined){
-console.log("received query by " + req.query.searchLevel);
-if(req.query.searchLevel=="bpel"){
-cubeCompositeInstance.find({ $text : { $search : req.query.instanceTitle },"MODIFY_DATE": {$gte: beginDate,$lt: endDate} }).exec(function(err, cubeinstances){
-if (err){
-console.log("Error finding instances with Title " + req.query.instanceTitle + ' Error is ' + err);
-res.send("Error finding instances with Title " + req.query.instanceTitle + ' Error is ' + err);
-}
-else if(cubeinstances.length==0){
-console.log("No Instances found with Title " + req.query.instanceTitle);
-res.send("No Instances found with Title " + req.query.instanceTitle);
-}
-else{
-console.log('Found Instances for ' + req.query.instanceTitle + ' length is ' + cubeinstances.length);
-res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-else if(req.query.searchLevel=="composite"){
-cubeCompositeInstance.find({ $text : { $search : req.query.instanceTitle },"MODIFY_DATE": {$gte: beginDate,$lt: endDate} }).exec(function(err, cubeCompositeInstances){
-if (err){
-console.log("Error finding instances with Title " + req.query.instanceTitle + ' Error is ' + err);
-res.send("Error finding instances with Title " + req.query.instanceTitle + ' Error is ' + err);
-}
-else if(cubeCompositeInstances==undefined || cubeCompositeInstances.length==0){
-console.log("No Instances found with Title " + req.query.instanceTitle);
-res.send("No Instances found with Title " + req.query.instanceTitle);
-}
-else{
-res.type('json');
-res.send({"instances":cubeCompositeInstances});
-}
-});
-}
-else {
-res.send("Invalid Search Level");
-}
-}
+// Construct the query object based on the query parameters for using in model.find
+var query = {};
+if(req.query.instanceId!=undefined && req.query.searchLevel=="bpel")
+query = {'CIKEY':Number(req.query.instanceId),"MODIFY_DATE": {$gte: beginDate,$lt: endDate}};
+else if(req.query.instanceId!=undefined && req.query.searchLevel=="composite")
+query = {'CMPST_ID':Number(req.query.instanceId),"MODIFY_DATE": {$gte: beginDate,$lt: endDate}};
+else if(req.query.instanceTitle!=undefined && req.query.searchLevel!=undefined)
+query = { $text : { $search : req.query.instanceTitle },"MODIFY_DATE": {$gte: beginDate,$lt: endDate} };
+else if(req.query.processName!=undefined && req.query.searchLevel=="bpel")
+query = {'COMPONENT_NAME':req.query.processName,"MODIFY_DATE": {$gte: beginDate,$lt: endDate}};
+else if(req.query.processName!=undefined && req.query.searchLevel=="composite")
+query = {'COMPOSITE_NAME':req.query.processName,"MODIFY_DATE": {$gte: beginDate,$lt: endDate}};
+else if(req.query.ecid!=undefined)
+query = {ECID:req.query.ecid};
 
-//Query by Process Name
-else if(req.query.processName!=undefined){
-if(req.query.searchLevel=="bpel"){
-cubeCompositeInstance.find({COMPONENT_NAME:req.query.processName,"MODIFY_DATE": {$gte: beginDate,$lt: endDate}},function(err, cubeinstances){
-if (err){
-console.log("Error finding instances with Process Name " + req.query.processName + ' and start date ' + beginDate + ' and end date ' + endDateString + ' Error is ' + err);
-res.send("Error finding instances with Process Name " + req.query.processName + ' Error is ' + err);
-}
-else if (cubeinstances.length==0){
-console.log("No Instances found with Process Name " + req.query.processName + ' and date ' + beginDate);
-res.send("No Instances found with Process Name " + req.query.processName);
-}
-else{
-console.log('Found Instances for ' + req.query.processName + ' with type ' + typeof(cubeinstances) + ' length is ' + cubeinstances.length);
-console.log('process name is ' + cubeinstances[0].COMPONENT_NAME);
-res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-else if(req.query.searchLevel=="composite"){
-cubeCompositeInstance.find({COMPOSITE_NAME:req.query.processName,"MODIFY_DATE": {"$gte": beginDate,$lt: endDate}},function(err, cubeinstances){
-if (err){
-console.log("Error finding instances with Process Name " + req.query.processName + ' Error is ' + err);
-res.send("Error finding instances with Process Name " + req.query.processName + ' Error is ' + err);
-}
-else if (cubeinstances.length==0){
-console.log("No Instances found with Process Name " + req.query.processName);
-res.send("No Instances found with Process Name " + req.query.processName);
-}
-else{
-console.log('Found Instances for ' + req.query.processName + ' length is ' + cubeinstances.length);
-res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-else {
-res.send("Invalid Search Level");
-}
-}
-
-// Advanced search by Elem name and value
-else if(req.query.elementName!=undefined && req.query.elementValue!=undefined){
-
-var regex = new RegExp(req.query.elementName + ".{1,10}" + req.query.elementValue, "g");
-xmlDocument.find({ $text : { $search : { $regex: regex } } }).exec(function(err, xmlDocumentInstances){
-if (err){
-console.log("Error finding instances for " + req.query.elementName + " " + req.query.elementValue + ' error is ' + err);
-res.send("Error finding instances for " + req.query.elementName + " " + req.query.elementValue);
-}
-else if (xmlDocumentInstances.length==0){
-console.log("No Instances found for " + req.query.elementName + " " + req.query.elementValue);
-res.send("No Instances found for " + req.query.elementName + " " + req.query.elementValue);
-}
-else{
-console.log('Found Instances for ' + req.query.elementName + ' ' + req.query.elementValue + ' length is ' + xmlDocumentInstances.length);
-res.type('json');
-res.send({"instances":xmlDocumentInstances});
-}
-});
-}
-
-else if(req.query.ecid!=undefined){
-
-cubeCompositeInstance.find({ECID:req.query.ecid},function(err, cubeinstances){
-if (err){
-console.log("Error finding instance " + req.query.instanceId + ' error is ' + err);
-}
-else{
-console.log('Found Instances for ecid ' + req.query.ecid + ' length is ' + cubeinstances.length);
-res.type('json');
-res.send({"instances":cubeinstances});
-}
-});
-}
-
-else {
-res.send("Invalid search parameters. Please retry with valid parameters");
-}
+cubeCompositeInstance.find(query,function(err, cubeinstances){
+sendBackData(err,cubeinstances);
+}).limit(10000).sort("-MODIFY_DATE");
 
 });
 
