@@ -78,7 +78,7 @@ public class ReaderThread implements Runnable{
 			   int batchStartRow = startRow;
 			   int batchEndRow;
 			   batchEndRow = startRow + recordsPerBatch;
-			   if(recordsPerBatch>endRow)
+			   if(recordsPerBatch>endRow || recordsPerBatch>endRow-startRow)
 				   batchEndRow=endRow; 
 			   while(batchStartRow<endRow){
 				   System.out.println(threadName + " Executing SQL " + SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow);
