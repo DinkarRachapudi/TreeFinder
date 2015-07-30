@@ -11,11 +11,6 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
 ![alt tag](https://github.com/DinkarRachapudi/DinkarRachapudi.github.io/blob/master/img/System%20Architecture%20-Spring%20Integration.jpg?raw=true)
 
 
-##Prerequisites
-
-1. Computer/Server with Windows OS and Java JDK
-
-
 ##Setting up the Project
 
 1.	Checkout the project from GitHub.
@@ -32,5 +27,5 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
 5.	Edit main.handlebars and home.handlebars - Enter SOA server host/port, weblogic domain name and SOA server name in the angle bracket place holders. Don't forget to remove the angle brackets.
 6.	Run loadMongo.bat file to load the data from Oracle BPEL Engine tables into MongoDB.
 7.	CD to the project directory from a terminal and run 'node server.js'. Make sure 'MongoDB connection established' message is displayed. 
-8.	Fire up a browser and navigate to http://localhost:3000 to start searching.
+8.	Fire up a browser and navigate to http://hostName:3000 (where hostName is the name of the computer/server where the app is running) to start searching.
 
