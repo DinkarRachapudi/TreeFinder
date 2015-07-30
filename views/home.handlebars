@@ -54,11 +54,11 @@
 	<div class="row top-margin">
 	<input id="identifierField" type="text" name="instanceId" placeholder="Instance Id" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceIdField">
 	<input type="text" name="instanceTitle" placeholder="Instance Title" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showInstanceTitleField">
-	<input type="text" name="processName" placeholder="Process Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showProcessNameField" data-ng-change="showSuggestedProcesses=true">
+	<input type="text" name="processName" placeholder="Process Name" autocomplete="off" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showProcessNameField" data-ng-change="showSuggestedProcesses=true">
 	<input type="text" name="elementName" placeholder="Element Name" data-ng-model="SearchIdentifierValue" class="form-control input-lg" data-ng-show="showElementNameField">
 	<input type="text" name="elementValue" placeholder="Element Value" data-ng-model="SearchIdentifierValueTwo" class="form-control top-margin input-lg" data-ng-show="showElementValueField">
 	<ul class="list-group" data-ng-show="showSuggestedProcesses && showProcessNameField && SearchIdentifierValue.length>0">
-    <li class="noListStyle list-group-item" data-ng-repeat="x in processes | limitTo:60 | filter:SearchIdentifierValue" data-ng-click="getCtrlScope().SearchIdentifierValue=x;getCtrlScope().showSuggestedProcesses=false"><span data-ng-bind="x"></span></li><
+    <li class="noListStyle list-group-item" data-ng-repeat="x in processes | limitTo:60 | filter:SearchIdentifierValue" data-ng-click="getCtrlScope().SearchIdentifierValue=x;getCtrlScope().showSuggestedProcesses=false"><span data-ng-bind="x"></span></li>
   </ul>
 	</div>
 	

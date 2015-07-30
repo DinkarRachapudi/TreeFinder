@@ -9,7 +9,8 @@ var fs = require('fs');
 
 
 var server_port = 3000
-var server_ip_address = 'localhost'
+var hostName = require('os').hostname();
+var server_ip_address = hostName || 'localhost'
 
 app.use(express.static(__dirname + '/public'));
 
@@ -51,18 +52,19 @@ var endDate = endDateAsDate.getFullYear() + "-" + (endDateAsDate.getMonth()+1) +
  " " + endDateAsDate.getHours() + ":" + endDateAsDate.getMinutes() + ":" +  endDateAsDate.getSeconds() + ".000";
 
 
-
+var processes = [];
+cubeCompositeInstance.distinct('COMPONENT_NAME',function(err, docs){
+console.log("Processes: " + JSON.stringify(docs));
+processes = docs;
+});
 
 app.get('/',function(req, res){
 res.render('home');
 });
 
 app.get('/getProcesses',function(req, res){
-cubeCompositeInstance.distinct('COMPONENT_NAME',function(err, docs){
-console.log("Processes: " + JSON.stringify(docs));
 res.type('json');
-res.send({"processes":docs});
-})
+res.send({"processes":processes});
 });
 
 app.get('/getInstances',function(req, res){
