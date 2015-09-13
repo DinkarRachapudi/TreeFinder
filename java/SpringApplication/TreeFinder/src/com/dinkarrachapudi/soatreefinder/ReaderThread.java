@@ -19,9 +19,6 @@ public class ReaderThread implements Runnable{
 	String SQL;
 	String columnsSQL;
 	String threadName;
-	int startRow;
-	int endRow;
-	
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -48,18 +45,9 @@ public class ReaderThread implements Runnable{
 		this.threadName = threadName;
 	}
 	
-	public void setStartRow(int startRow){
-		this.startRow = startRow;
-	}
-	
-	public void setEndRow(int endRow){
-		this.endRow = endRow;
-	}
-	
-	
-	
 	
 	public void run(){
+		synchronized(this){
 		try{   
 			SqlRowSetMetaData cubeCompositeMetadata = jdbcTemplateObject.queryForRowSet(columnsSQL).getMetaData();
 			filePath = folderPath + "\\cubeComposite_instance-" + threadName + ".csv";
@@ -74,23 +62,12 @@ public class ReaderThread implements Runnable{
 			   }
 			   fileWriter.flush();
 			   fileWriter.close();
-			   
-			   int batchStartRow = startRow;
-			   int batchEndRow;
-			   batchEndRow = startRow + recordsPerBatch;
-			   if(recordsPerBatch>endRow || recordsPerBatch>endRow-startRow)
-				   batchEndRow=endRow; 
-			   while(batchStartRow<endRow){
-				   System.out.println(threadName + " Executing SQL " + SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow);
+				   System.out.println(threadName + " Executing SQL " + SQL);
 				   fileWriter = new FileWriter(filePath,true);
 				   rcbHandler = new CSVWriter(fileWriter);
-				   jdbcTemplateObject.query(SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow, rcbHandler);
-				   System.out.println("Completed CSVWrite for SQL " + SQL + " where rn>" + batchStartRow + " and rn<=" + batchEndRow);
-				   batchStartRow = batchStartRow + recordsPerBatch;
-				   batchEndRow = batchStartRow + recordsPerBatch;
-				   if(endRow<batchEndRow)
-					   batchEndRow = endRow;
-			   }
+				   jdbcTemplateObject.query(SQL, rcbHandler);
+				   System.out.println("Completed CSVWrite for SQL " + SQL);
+				   
 			   fileWriter.close();
 			   String mongoImportCommand = "mongoimport --db soainfra --collection cubeComposite_instance --type csv --headerline --file " + System.getProperty("user.dir") + "\\cubeComposite_instance-" + threadName + ".csv";
 			   System.out.println("Executing " + mongoImportCommand);
@@ -100,7 +77,8 @@ public class ReaderThread implements Runnable{
 			   catch(IOException e) {
 				   System.out.println("IOException: " + e);
 			   }
-		System.out.println("CSVWrite complete for " + filePath);
+		notify();
+	}
 	}
 	
 	public void start(){
