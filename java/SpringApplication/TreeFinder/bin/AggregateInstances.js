@@ -27,6 +27,6 @@ var db = conn.getDB("soainfra");
 		   COMPTITLE: { $first: "$COMPTITLE"}
         }
       },
-	  { $out : "cubegroup" }
+	  { $out : "cubeComposite_instance" }
      ], {allowDiskUse:true}
    );
