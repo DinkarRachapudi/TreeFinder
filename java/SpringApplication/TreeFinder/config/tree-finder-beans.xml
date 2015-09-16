@@ -21,26 +21,28 @@
    
    <bean id="reader" class="com.dinkarrachapudi.soatreefinder.OracleDBReader">
       <property name="dataSource"  ref="BPELDataSource"/>
-	  <property name="numberOfthreads"  value="10"/>
+	  <property name="numberOfthreads"  value="2"/>
 	  <property name="countSQL"  value="select count(*) from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id"/>
-   </bean>
-   
-   <bean id="readerFacade" class="com.dinkarrachapudi.soatreefinder.ReaderFacade" init-method="init">
-      <property name="reader"  ref="reader" /> 
-	  <property name="mongoHost"  value="127.0.0.1"/> 
-	  <property name="mongoPort"  value="27017"/>  	  
-   </bean>
-   
-   <bean id="readerThread" class="com.dinkarrachapudi.soatreefinder.ReaderThread" scope="prototype"> 
-	  <property name="dataSource"  ref="BPELDataSource"/>  
-	  <property name="folderPath"  value="#{ systemProperties['user.dir'] }"/>
-	  <property name="recordsPerBatch"  value="20"/>
 	  <property name="SQL"  value="select * from (select rownum rn,cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
 TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
 cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
 cui.DOMAIN_NAME,cui.COMPONENT_NAME,cui.COMPOSITE_REVISION,
 TO_CHAR(cui.CPST_INST_CREATED_TIME,'YYYY-MM-DD HH24:MI:SSxFF') as CPST_INST_CREATED_TIME,coi.TITLE as COMPTITLE
 from cube_instance cui, composite_instance coi where cui.cmpst_id=coi.id order by CREATION_DATE asc)"/>
+   </bean>
+   
+   <bean id="readerFacade" class="com.dinkarrachapudi.soatreefinder.ReaderFacade" init-method="init">
+      <property name="reader"  ref="reader" /> 
+	  <property name="mongoHost"  value="127.0.0.1"/> 
+	  <property name="mongoPort"  value="27017"/>  	
+	  <property name="initialRun"  value="N"/> 
+	  <property name="mongoDBAggregateCommand"  value="mongo localhost:27017/soainfra #{ systemProperties['user.dir'] }\AggregateInstances.js"/> 	 
+   </bean>
+   
+   <bean id="readerThread" class="com.dinkarrachapudi.soatreefinder.ReaderThread" scope="prototype"> 
+	  <property name="dataSource"  ref="BPELDataSource"/>  
+	  <property name="folderPath"  value="#{ systemProperties['user.dir'] }"/>
+	  <property name="recordsPerBatch"  value="100"/>
 	  <property name="columnsSQL"  value="select rownum rn,cui.CIKEY,TO_CHAR(cui.CREATION_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as CREATION_DATE,
 TO_CHAR(cui.MODIFY_DATE,'YYYY-MM-DD HH24:MI:SSxFF') as MODIFY_DATE,cui.STATE,cui.PRIORITY,cui.TITLE,
 cui.STATUS,cui.ROOT_ID,cui.PARENT_ID,cui.ECID,cui.CMPST_ID,cui.PARENT_REF_ID,cui.COMPONENTTYPE,cui.COMPOSITE_NAME,
