@@ -50,14 +50,7 @@ public class OracleDBReader implements IReader{
 			   readerThread.setThreadName("Thread-"+i);
 			   readerThread.setSQL(SQL + " where rn>" + startRow + " and rn<=" + endRow);
 			   readerThread.start();
-			   synchronized(readerThread){
-		            try{
 		                System.out.println("Waiting for Thread-"+i + " to complete...");
-		                readerThread.wait();
-		            }catch(InterruptedException e){
-		                e.printStackTrace();
-		            }
-			   }
 			   startRow = endRow;
 			   endRow = (endRow + recordsPerThread > (int)totalRecords)?(int)totalRecords:(endRow + recordsPerThread);
 		   }
