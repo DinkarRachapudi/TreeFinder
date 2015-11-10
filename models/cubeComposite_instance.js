@@ -5,7 +5,7 @@ var cubeComposite_instanceSchema = new mongoose.Schema({
     CIKEY: Number,
 	CREATION_DATE: String,
 	MODIFY_DATE: String,
-	STATE: String,
+	STATE: Number,
 	PRIORITY: String,
 	TITLE: String,
 	STATUS: String,
@@ -20,7 +20,16 @@ var cubeComposite_instanceSchema = new mongoose.Schema({
 	COMPONENT_NAME: String,
 	COMPOSITE_REVISION: String,
 	CPST_INST_CREATED_TIME: String,
-	COMPTITLE: String
+	COMPTITLE: String,
+	REPORTS: {
+	SYNCHRONOUS_STUCK: {
+    ISSUE_STATUS: String,
+	ISSUE_TYPE: String,
+	APPLICATION: String,
+	COMMENTS: String,
+	UPDATED_BY: String
+	}
+  }
 },{ collection : 'cubeComposite_instance' });
 
 cubeComposite_instanceSchema.plugin(textSearch);

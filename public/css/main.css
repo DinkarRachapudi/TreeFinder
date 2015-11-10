@@ -326,7 +326,14 @@ list-style-type:none;
 }
 
 nav#banner{
-background-color:rgb(180,204,237);
+background-color:rgb(74,135,189);
+}
+
+span#logo{
+font-size:2.5em;
+font-family: "Franklin Gothic Medium";
+color: rgb(225,255,255);
+
 }
 
 div.streak{
@@ -396,4 +403,39 @@ margin-left:auto;
    color: rgb(255,255,255);
    font-weight:bold;
    cursor:pointer;
+}
+
+li.overlap{
+position:relative;
+
+z-index: 1;
+}
+
+button.fixedPos{
+position:relative;
+z-index: 0;
+}
+
+ul#menuItems{
+margin-right:10%;
+}
+
+.activeMenu{
+background-color:rgb(184,225,245);
+}
+
+.whiteFont{
+color: rgb(225,255,255);
+font-size:1em;
+font-weight:bold;
+}
+
+.primaryFont{
+color:rgb(74,135,189);
+font-size:1em;
+font-weight:bold;
+}
+
+a#logo:link, a#logo:visited,  a#logo:hover{
+    text-decoration: none;
 }

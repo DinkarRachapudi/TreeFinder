@@ -1,5 +1,5 @@
   		<div class="container">
-		<div id="formContainer" data-ng-init="showInstanceIdField=true;searchBy='Instance Id';searchCriteria='bpel';getProcesses()">
+		<div id="formContainer" data-ng-init="showInstanceIdField=true;searchBy='Instance Id';searchCriteria='bpel';getProcesses();activePageName='Instances'">
 		<form id="searchForm">
 		<div class="row">
 	<div class="radio alert alert-info row">
@@ -90,7 +90,7 @@
  <div calss="row">
  <div class="float-right">
  <span class="label label-primary">Results Per Page</span>
- <select data-ng-model="resultsPerPage" data-ng-change="getNoOfPages()">
+ <select data-ng-model="resultsPerPage" data-ng-change="getNoOfPages('home')">
  <option value=10>10</option>
  <option value=20>20</option>
  <option value=50>50</option>
@@ -120,7 +120,7 @@
     <tbody>
       <tr data-ng-repeat="x in instances| spliceFilter:pagesToChop*resultsPerPage | limitTo:resultsPerPage" data-ng-class="getInstanceColor(x.STATE)">
         <td><span data-ng-bind="(pagesToChop*resultsPerPage) + $index + 1"></span></td>
-		<td><a data-ng-href="http://localhost:7001/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_base_domain/base_domain/soa_server1/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
+		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
         <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
         <td><span data-ng-bind="x.TITLE"></span></td>
 		<td><span data-ng-bind="getState(x.STATE)"></span></td>

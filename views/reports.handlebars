@@ -1,0 +1,132 @@
+  		<div class="container">
+		<div id="formContainer" data-ng-init="activePageName='Reports'">
+		<form id="searchForm">
+	
+	<div class="row top-margin">
+	<div class="col-sm-12">
+	<h2><span class="label label-primary">Report Date:</span></h2>
+	</div>
+	</div>
+	<div class="row top-margin">
+	<div class="col-sm-6">
+	<input type="text" class="form-control input-lg" id="datepicker" data-ng-model="stuckInstancesDate">
+	</div>
+	<div class="col-sm-6">
+	<button data-ng-disabled="advancedOff" class="btn-lg btn-primary" data-ng-click="errorMessage='';stuckInstances=[];pageStartInstances=[];getStuckInstances(stuckInstancesDate);pagesToChop=0;onInstanceSearch()">
+      <span class="glyphicon glyphicon-search"></span> Search </button>
+	  </div>
+	</div>
+	</form>
+	</div>
+	
+	
+	<div id="resultsContainer">
+	
+  
+	<div data-ng-show="stuckInstances.length>0">
+	
+	
+	<div class="row">
+	<ul class="pagination pagination-sm">
+	<li><span class="label label-primary">Page</span></li>
+    <li data-ng-repeat="x in pageStartInstances" data-ng-class="getActivePageStyle($index + 1)">
+	<a href="#" data-ng-click="$parent.pagesToChop=$index">
+	<span data-ng-bind="$index + 1"></span>
+	</a>
+	</li>
+  </ul>
+ </div>
+ 
+ <div class="row">
+ <div class="float-right">
+ <span class="label label-primary">Results Per Page</span>
+ <select data-ng-model="resultsPerPage" data-ng-change="getNoOfPages('reports')">
+ <option value=10>10</option>
+ <option value=20>20</option>
+ <option value=50>50</option>
+ </select>
+ </div>
+ </div>
+ 
+	
+	<table class="table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>BPELInstanceId</th>
+        <th>ProcessName</th>
+		<th>Title</th>
+		<th>CreationDateTime</th>
+		<th>IssueStatus</th>
+		<th>IssueType</th>
+		<th>Application</th>
+		<th>Comments</th>
+		<th>UpdatedBy</th>
+		<th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-ng-repeat="x in stuckInstances| spliceFilter:pagesToChop*resultsPerPage | limitTo:resultsPerPage" data-ng-class="getReportInstanceColor(x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_STATUS)">
+        <td><span data-ng-bind="(pagesToChop*resultsPerPage) + $index + 1"></span></td>
+		<td><a data-ng-href="http://<Host>:<Port>/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_<DomainName>/<DomainName>/<ManagedServerName>/~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~%20[~~x.COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~x.DOMAIN_NAME~~/~~x.COMPOSITE_NAME~~!~~x.COMPOSITE_REVISION~~/~~x.COMPONENT_NAME~~/bpel:~~x.CIKEY~~" target="_blank"><span data-ng-bind="x.CIKEY"></span></a></td>
+        <td><span data-ng-bind="x.COMPONENT_NAME + ' (v. ' + x.COMPOSITE_REVISION + ')'"></span></td>
+        <td><span data-ng-bind="getTitle(x)"></span></td>
+		<td><span data-ng-bind="x.CREATION_DATE"></span></td>
+		<td>
+		<select data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_STATUS">
+		<option value="Open">Open</option>
+		<option value="Closed">Closed</option>
+		</select>
+		</td>
+		<td>
+		<input type="text" name="issueType" class="form-control input-sm" placeholder="~~x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_TYPE~~" data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_TYPE">
+		</td>
+		<td>
+		<input type="text" name="application" class="form-control input-sm" placeholder="~~x.REPORTS.SYNCHRONOUS_STUCK.APPLICATION~~" data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.APPLICATION">
+		</td>
+		<td>
+		<input type="text" name="comments" class="form-control input-sm" placeholder="~~x.REPORTS.SYNCHRONOUS_STUCK.COMMENTS~~" data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.COMMENTS" data-ng-focus="showComments=true" data-ng-hide="showComments">
+		<div class="form-group">
+      <textarea class="form-control" rows="5" id="comment" data-ng-show="showComments" data-ng-blur="showComments=false" data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.COMMENTS"></textarea>
+    </div>
+		</td>
+		<td>
+		<input type="text" name="updatedBy" class="form-control input-sm" placeholder="~~x.REPORTS.SYNCHRONOUS_STUCK.UPDATED_BY~~" data-ng-model="x.REPORTS.SYNCHRONOUS_STUCK.UPDATED_BY">
+		</td>
+		<td>
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#responseModal" data-ng-click="updateStuckInstance(x.CIKEY,x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_STATUS,x.REPORTS.SYNCHRONOUS_STUCK.ISSUE_TYPE,x.REPORTS.SYNCHRONOUS_STUCK.APPLICATION,x.REPORTS.SYNCHRONOUS_STUCK.COMMENTS,x.REPORTS.SYNCHRONOUS_STUCK.UPDATED_BY)">Update</button>
+		</td>
+		  <div class="modal fade" id="responseModal" role="dialog">
+    <div class="modal-dialog">
+    
+      
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Update Status</h4>
+        </div>
+        <div class="modal-body">
+          <p><span data-ng-bind="updateMessage"/></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  
+ 
+  
+  <div data-ng-show="showLoadingImg && errorMessage.length==0 && stuckInstances.length==0">
+  <img src="../img/ajax-loader.gif"/>
+  </div>
+  
+	</div>
+  
+  
+  </div>

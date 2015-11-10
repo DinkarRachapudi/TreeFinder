@@ -27,6 +27,8 @@ app.set('view engine', 'handlebars');
 var mongoose = require('mongoose');
 
 var credentials = require('./models/credentials.js');
+var parameters = require('./models/parameters.js');
+var syncProcessesList = parameters.syncProcessesList;
 var opts = {
 server:{
 socketOptions:{keepAlive:1}
@@ -118,6 +120,60 @@ sendBackData(err,cubeinstances);
 
 });
 
+app.get('/getReports',function(req, res){
+res.render('reports');
+});
+
+app.get('/getReport',function(req, res){
+var query = {'STATE':1,'COMPONENT_NAME':{$in:syncProcessesList},"CREATION_DATE": {$gte: req.query.startDate,$lt: req.query.endDate}};
+cubeCompositeInstance.find(query,function(err, stuckInstances){
+if (err){
+console.log("Error finding instances: " + err);
+res.send("Error finding instances: " + err);
+}
+else if (stuckInstances.length==0){
+console.log("No Instances found with search parameters");
+res.send("No Instances found between " + req.query.startDate + " and " + req.query.endDate);
+}
+else{
+console.log('Found Instances.' + ' Length is ' + stuckInstances.length);
+res.type('json');
+res.send({"stuckInstances":stuckInstances});
+}
+}).limit(10000).sort("-MODIFY_DATE");
+});
+
+
+app.get('/updateStuckInstance',function(req, res){
+var conditions = {CIKEY:Number(req.query.cikey)};
+var options = {multi:true};
+var update = {REPORTS:{SYNCHRONOUS_STUCK:{}}};
+if(req.query.issueStatus!=undefined && req.query.issueStatus.length>0)
+update.REPORTS.SYNCHRONOUS_STUCK['ISSUE_STATUS'] = req.query.issueStatus;
+if(req.query.issueType!=undefined && req.query.issueType.length>0)
+update.REPORTS.SYNCHRONOUS_STUCK['ISSUE_TYPE'] = req.query.issueType;
+if(req.query.application!=undefined && req.query.application.length>0)
+update.REPORTS.SYNCHRONOUS_STUCK['APPLICATION'] = req.query.application;
+if(req.query.comments!=undefined && req.query.comments.length!=undefined && req.query.comments.length>0)
+update.REPORTS.SYNCHRONOUS_STUCK['COMMENTS'] = req.query.comments;
+if(req.query.updatedBy!=undefined && req.query.updatedBy.length>0)
+update.REPORTS.SYNCHRONOUS_STUCK['UPDATED_BY'] = req.query.updatedBy;
+
+console.log("conditions-" + JSON.stringify(conditions) + " update-" + JSON.stringify(update));
+
+cubeCompositeInstance.update(conditions,{ $set: update},updateCallback);
+
+function updateCallback(err, numAffected){
+if (err){
+console.log("Error updating instances: " + err);
+res.send("Error updating instances: " + err);
+}
+else{
+console.log('Updated ' + JSON.stringify(numAffected) + ' records and type is ' + typeof(numAffected));
+res.send('Updated ' + numAffected.nModified + ' records');
+}
+}
+});
 
 // Automatic views rendering
 app.use(function(req,res,next){

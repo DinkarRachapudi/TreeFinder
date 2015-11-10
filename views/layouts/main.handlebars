@@ -14,7 +14,9 @@
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="../../css/normalize.css">
         <link rel="stylesheet" href="../../css/main.css">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
@@ -25,15 +27,26 @@
 	<nav id="banner" class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-	  <a href="/" target="_self">
-                <img class="logo leftMargin" alt="TreeFinder" src="../../img/treelogo.png" />
+	  <a id="logo" href="/" target="_self">
+                <!--<img class="logo leftMargin" alt="TreeFinder" src="../../img/treelogo.png" />-->
+				<span id="logo" class="leftMargin">treeFinder</span>
             </a>
 	</div>
+	<div>
+      <ul class="nav navbar-nav navbar-right" id="menuItems">
+        <li data-ng-class="getActiveMenuStyle('Instances')"><a href="/" target="_self"><span data-ng-class="getActiveFontStyle('Instances')">Instances</span></a></li>
+        <li data-ng-class="getActiveMenuStyle('Reports')"><a data-ng-focus="activePageName='Reports'" data-ng-blur="activePageName='Instances'" class="dropdown-toggle" data-toggle="dropdown" href="#"><span data-ng-class="getActiveFontStyle('Reports')">Reports <span class="caret"></span></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/reports" target="_self">Stuck-Instances</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
-  <div class="streak">
+  <!--<div class="streak">
 	</div>
   <div class="subBanner">
-	</div>
+	</div>-->
 </nav>	
 
 
@@ -60,6 +73,23 @@
         <li class="noListStyle" data-ng-repeat="instance in instance.children" data-ng-include="'tree_instance_renderer.html'" data-ng-init="showParent=false"></li>
     </ul>
 	 
+</script>
+
+<script type="text/ng-template"  id="flowActivity_renderer.html">
+   <div data-ng-class="getInstanceColor(returnInstanceByCIKEY(instance.cikey).STATE,true)" data-ng-init="addChildToTree(instance)" data-ng-mouseover="showParent=true" data-ng-mouseleave="showParent=false">
+   <span class="fieldName label label-primary"><span data-ng-bind="returnInstanceByCIKEY(instance.cikey).COMPONENT_NAME"/></span>
+   <span class="fieldName label label-default">Instance Id:</span><a data-ng-href="http://localhost:7001/em/faces/ai/soa/bpelInstance?refresh=yes&target=/Farm_base_domain/base_domain/soa_server1/~~returnInstanceByCIKEY(instance.cikey).DOMAIN_NAME~~/~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_NAME~~%20[~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_REVISION~~]&type=oracle_soa_composite&currentTab=audit&soaContext=~~returnInstanceByCIKEY(instance.cikey).DOMAIN_NAME~~/~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_NAME~~!~~returnInstanceByCIKEY(instance.cikey).COMPOSITE_REVISION~~/~~returnInstanceByCIKEY(instance.cikey).COMPONENT_NAME~~/bpel:~~returnInstanceByCIKEY(instance.cikey).CIKEY~~" target="_self"> <span data-ng-bind="instance.cikey"></a></span>
+   
+   <span class="fieldName label label-default">Title:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).TITLE"/>
+   <span class="fieldName label label-default">Created:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).CREATION_DATE"/>
+   <span class="fieldName label label-default">Modified:</span> <span data-ng-bind="returnInstanceByCIKEY(instance.cikey).MODIFY_DATE"/>
+   <span class="fieldName label label-default" data-ng-show="showParent">Parent: 
+   <span data-ng-bind="getParent(returnInstanceByCIKEY(instance.cikey).PARENT_REF_ID).COMPONENT_NAME + ' - ' + getParent(returnInstanceByCIKEY(instance.cikey).PARENT_REF_ID).CIKEY"/></span>
+   </div>
+   
+    <ul>
+        <li class="noListStyle" data-ng-repeat="instance in instance.children" data-ng-include="'tree_instance_renderer.html'" data-ng-init="showParent=false"></li>
+    </ul> 
 </script>
 
 </body>

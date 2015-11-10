@@ -79,6 +79,33 @@ switch (paramName) {
     });
  }
  
+  this.getStuckInstancesData = function(searchStartDate,searchEndDate,callbackFunc){
+ var httpcall = $http({
+        method: 'GET',
+        url: '/getReport',
+        params: {startDate:searchStartDate,endDate:searchEndDate}
+        });
+		httpcall.success(function(data){
+         callbackFunc(data);
+    }).error(function(){
+		$scope.errorMessage="Error fetching instances";
+    });
+ }
+ 
+ this.updateStuckInstanceData = function(InstanceId,IssueStatus,IssueType,Application,Comments,UpdatedBy,callbackFunc){
+ var httpcall = $http({
+        method: 'GET',
+        url: '/updateStuckInstance',
+        params: {cikey:InstanceId,issueStatus:IssueStatus,issueType:IssueType,application:Application,comments:Comments,updatedBy:UpdatedBy}
+        });
+		httpcall.success(function(data){
+		callbackFunc(data);
+         //$scope.updateMessage=data;
+    }).error(function(){
+		$scope.updateMessage="Error updating instances";
+    });
+ }
+ 
 });
 
 // App's controller
@@ -100,6 +127,10 @@ $scope.resultsPerPage = 10;
 $scope.showLoadingImg = false;
 $scope.processes = [];
 $scope.showSuggestedProcesses = false;
+$scope.stuckInstances=[];
+$scope.showComments=false;
+$scope.activePageName="Instances";
+$scope.currentPageName="";
 
 
 // Function called from Search/TreeFinder buttons
@@ -109,7 +140,7 @@ dataService.getInstancesData(searchById,searchByValue,searchByValueTwo,searchCri
 		if(dataResponse.instances!=undefined){
         $scope.instances = dataResponse.instances;
 		cubeInstances = $scope.instances;
-		$scope.getNoOfPages();
+		$scope.getNoOfPages("home");
 		}
 		else {
 		$scope.errorMessage=dataResponse;
@@ -136,11 +167,18 @@ $scope.processes = [];
 
 	
 // Determine no of pages needed
-$scope.getNoOfPages = function(){
+$scope.getNoOfPages = function(pageName){
+pageName = pageName ==null ? "home" : pageName;
 $scope.pageStartInstances=[];
 $scope.pagesToChop=0;
 $scope.resultsPerPage = Number($scope.resultsPerPage);
-for(i=0;i<$scope.instances.length;i+=$scope.resultsPerPage){
+var instancesLength = 0;
+if(pageName=="home")
+instancesLength = $scope.instances.length;
+else if(pageName=="reports")
+instancesLength = $scope.stuckInstances.length;
+console.log("scope instances length is " + $scope.instances.length + " and instancesLength is " + instancesLength + " type of instancesLength is " + typeof(instancesLength));
+for(i=0;i<instancesLength;i+=$scope.resultsPerPage){
 i = Number(i);
 $scope.pageStartInstances.push(i+1);
 }
@@ -267,6 +305,30 @@ style="active";
 return style;
 }
 
+$scope.getActiveMenuStyle = function(pageName){
+var style="";
+if(pageName==$scope.activePageName)
+style="activeMenu";
+if(pageName=="Reports")
+style= style + " dropdown";
+return style;
+}
+
+$scope.getActiveFontStyle = function(pageName){
+var style="whiteFont";
+if(pageName==$scope.activePageName)
+style="primaryFont";
+return style;
+}
+
+
+$scope.getReportInstanceColor = function(IssueStatus){
+var colorClass ="alert alert-warning";
+if(IssueStatus=="Closed"){
+colorClass = "alert alert-success";
+}
+return colorClass;
+}
 
 // Fetching HTTP GET parameters
 $scope.paramObj = $location.search();
@@ -311,6 +373,34 @@ parentInstance=$scope.instances[i];
 return parentInstance;
 }	
 
+$scope.getStuckInstances = function(stuckInstancesDate){
+var startDate = new Date(stuckInstancesDate);
+var startDateString = startDate.getFullYear() + "-" + ("0" + (startDate.getMonth()+1)).slice(-2) + "-" + 
+("0" + startDate.getDate()).slice(-2) +  " 00:00:00.000"; 
+var endDate = new Date(stuckInstancesDate);
+endDate = new Date(endDate.setDate(endDate.getDate() + 1));
+var endDateString = endDate.getFullYear() + "-" + ("0" + (endDate.getMonth()+1)).slice(-2)  + "-" + 
+("0" + endDate.getDate()).slice(-2) +  " 00:00:00.000"; 
+dataService.getStuckInstancesData(startDateString,endDateString,function(dataResponse) {
+		if(dataResponse.stuckInstances!=undefined){
+        $scope.stuckInstances = dataResponse.stuckInstances;
+		$scope.getNoOfPages("reports");
+		}
+		else {
+		$scope.errorMessage=dataResponse;
+		$scope.stuckInstances = [];
+		}
+		
+    });
+}
+
+$scope.updateStuckInstance = function(InstanceId,IssueStatus,IssueType,Application,Comments,UpdatedBy){
+dataService.updateStuckInstanceData(InstanceId,IssueStatus,IssueType,Application,Comments,UpdatedBy,function(dataResponse) {
+        $scope.updateMessage=dataResponse; 
+    });
+}
+
+
 
 });
 
@@ -323,3 +413,7 @@ $(document).ready(function() {
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 });
 
+//JQuery Datepicker
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
