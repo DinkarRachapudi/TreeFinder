@@ -321,6 +321,19 @@ style="primaryFont";
 return style;
 }
 
+$scope.getMenuStyleByEvent = function(event,pageName){
+if(event=="click"){
+$scope.currentPageName=$scope.activePageName;
+$scope.activePageName=pageName;
+console.log("backed up page name is  " + $scope.currentPageName);
+}
+else if(event=="blur"){
+$scope.activePageName=$scope.currentPageName;
+//console.log("blurred page name is now " + $scope.activePageName);
+}
+console.log(event + " " + pageName + " " + $scope.activePageName);
+}
+
 
 $scope.getReportInstanceColor = function(IssueStatus){
 var colorClass ="alert alert-warning";

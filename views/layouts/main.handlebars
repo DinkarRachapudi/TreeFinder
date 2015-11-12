@@ -35,9 +35,9 @@
 	<div>
       <ul class="nav navbar-nav navbar-right" id="menuItems">
         <li data-ng-class="getActiveMenuStyle('Instances')"><a href="/" target="_self"><span data-ng-class="getActiveFontStyle('Instances')">Instances</span></a></li>
-        <li data-ng-class="getActiveMenuStyle('Reports')"><a data-ng-focus="activePageName='Reports'" data-ng-blur="activePageName='Instances'" class="dropdown-toggle" data-toggle="dropdown" href="#"><span data-ng-class="getActiveFontStyle('Reports')">Reports <span class="caret"></span></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="/reports" target="_self">Stuck-Instances</a></li>
+        <li data-ng-class="getActiveMenuStyle('Reports')"><a data-ng-click="getMenuStyleByEvent('click','Reports')" data-ng-blur="getMenuStyleByEvent('blur','Reports')" class="dropdown-toggle" data-toggle="dropdown" href="#"><span data-ng-class="getActiveFontStyle('Reports')">Reports <span class="caret"></span></span></a>
+          <ul class="dropdown-menu menuLink">
+            <li class=""><a href="/reports" target="_self"><span class="whiteFont">Stuck-Instances</span></a></li>
           </ul>
         </li>
       </ul>
