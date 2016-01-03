@@ -8,7 +8,7 @@ alternative web console for Oracle BPEL 11g applications and alleviates any load
 
 ##Features
 1. Simplified one stop search for searching BPEL instances by Instance Id, Title and Process Name.
-2. [TreeView](https://raw.githubusercontent.com/DinkarRachapudi/DinkarRachapudi.github.io/master/img/TreeView.jpg) showing end to end lifecycle of processes - similar to the Flowtrace view.
+2. [TreeView](https://raw.githubusercontent.com/DinkarRachapudi/DinkarRachapudi.github.io/master/img/FlowtraceView.jpg) showing end to end lifecycle of processes - similar to the Flowtrace view.
 3. Fast Title (Name) based search.
 4. Consolidated one stop search for multiple process (composite) revisions.
 
